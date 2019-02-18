@@ -7,9 +7,11 @@ public class LongestSubstrWithNoRepeatingChar {
 
     public String findLongestSubstringWithNonRepeatingCharInSubStr(String input) {
 
-        String longestSubStr = "";
         String currentSubStr = "";
         int currentSubStrStartPos = 0;
+        int longestSubStrStartPos = 0;
+        int longestSubStrLen = 0;
+        int currentSubStrLen = 0;
         HashMap<String, Integer> charLatestPositionsMap = new HashMap<>();
 
         for (int i = 0; i < input.length(); i++) {
@@ -18,23 +20,25 @@ public class LongestSubstrWithNoRepeatingChar {
             // case where we know there is no problem
             if (latestCharPos == null || latestCharPos < currentSubStrStartPos) {
                 currentSubStr = currentSubStr + currChar;
+                currentSubStrLen++;
                 charLatestPositionsMap.put(currChar, i);
             } else {
-                if (currentSubStr.length() > longestSubStr.length()) {
-                    longestSubStr = currentSubStr;
+                if (currentSubStrLen > longestSubStrLen) {
+                    longestSubStrLen = currentSubStrLen;
+                    longestSubStrStartPos = currentSubStrStartPos;
                 }
-                currentSubStr = input.substring(latestCharPos + 1, i + 1);
+                currentSubStrLen = i - latestCharPos;
                 currentSubStrStartPos = latestCharPos + 1;
                 charLatestPositionsMap.put(currChar, i);
             }
         }
 
-        if (currentSubStr.length() > longestSubStr.length()) {
-            longestSubStr = currentSubStr;
+        if (currentSubStrLen > longestSubStrLen) {
+            longestSubStrLen = currentSubStrLen;
+            longestSubStrStartPos = currentSubStrStartPos;
         }
 
-        return longestSubStr;
-
+        return input.substring(longestSubStrStartPos, longestSubStrStartPos + longestSubStrLen);
     }
 
     public String findLongestSubStringWithNonRepeatingCharsInWholeString(String input) {
@@ -83,6 +87,8 @@ public class LongestSubstrWithNoRepeatingChar {
         assertStringEquals("vdf", "dvdf", 2, "SUB_STRING");
         assertStringEquals("", "", 3, "SUB_STRING");
         assertStringEquals("A", "AAAA", 4, "SUB_STRING");
+        assertStringEquals("abcdef", "abcdaabcdef", 5, "SUB_STRING");
+        assertStringEquals("abcd", "abcabcd", 6, "SUB_STRING");
         // non-repeating char in the whole string
         System.out.println("Non-repeating char in the whole string: ");
         assertStringEquals("ATI", "SATISH", 1, "WHOLE_STRING");
