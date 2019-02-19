@@ -8,7 +8,46 @@ import java.util.Queue;
  */
 public class EncodeNArrayTree {
 
-    public BTreeNode encode(NTreeNode root) {
+    public BTreeNode encodeDFS(NTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        BTreeNode bTreeNode = BTreeNode.of(root.val);
+        BTreeNode tmp = null;
+        for (int i = 0; i < root.children.size(); i++) {
+            if (i == 0) {
+                bTreeNode.left = encodeDFS(root.children.get(i));
+                tmp = bTreeNode.left;
+            } else {
+                tmp.right = encodeDFS(root.children.get(i));
+                tmp = tmp.right;
+            }
+        }
+
+        return bTreeNode;
+    }
+
+    public NTreeNode decodeDFS(BTreeNode root) {
+        if (root == null) {
+            return null;
+        }
+
+        NTreeNode nTreeNode = NTreeNode.of(root.val);
+        if (root.left != null) {
+            nTreeNode.children.add(decodeDFS(root.left));
+            BTreeNode tmp = root.left;
+            while (tmp.right != null) {
+                nTreeNode.children.add(decodeDFS(tmp.right));
+                tmp = tmp.right;
+            }
+        }
+
+        return nTreeNode;
+
+    }
+
+    public BTreeNode encodeBFS(NTreeNode root) {
 
         if (root == null) {
             return null;
@@ -56,7 +95,7 @@ public class EncodeNArrayTree {
         }
     }
 
-    public NTreeNode decode(BTreeNode bTreeRoot) {
+    public NTreeNode decodeBFS(BTreeNode bTreeRoot) {
         if (bTreeRoot == null) {
             return null;
         }
@@ -136,14 +175,21 @@ public class EncodeNArrayTree {
         node5.children.add(NTreeNode.of(13));
 
         System.out.println("TC1 Results: \n");
-        BTreeNode bTreeNodeRoot = encode(nTreeNodeRoot);
-        System.out.println("BTree Node version of NTree Root: ");
+        BTreeNode bTreeNodeRoot = encodeBFS(nTreeNodeRoot);
+        System.out.println("BFS BTree Node version of NTree Root: ");
+        printBTreeNode(bTreeNodeRoot);
+        bTreeNodeRoot = encodeDFS(nTreeNodeRoot);
+        System.out.println("\nDFS BTree Node version of NTree Root: ");
         printBTreeNode(bTreeNodeRoot);
         System.out.println("\n");
 
-        NTreeNode nTreeNodeTmp = decode(bTreeNodeRoot);
-        System.out.println("NTree Node version of BTree root: ");
+        NTreeNode nTreeNodeTmp = decodeBFS(bTreeNodeRoot);
+        System.out.println("BFS NTree Node version of BTree root: ");
         printNTreeNode(nTreeNodeTmp);
+        nTreeNodeTmp = decodeDFS(bTreeNodeRoot);
+        System.out.println("\nDFS NTree Node version of BTree root: ");
+        printNTreeNode(nTreeNodeTmp);
+
         System.out.println("\n");
 
     }
@@ -169,17 +215,17 @@ public class EncodeNArrayTree {
 
     private void enccodeTc2() {
         System.out.println("TC2 Results: \n");
-        BTreeNode bTreeNode = encode(null);
+        BTreeNode bTreeNode = encodeBFS(null);
         if (bTreeNode == null) {
             System.out.println("BTree node is [NULL]\n");
         } else {
-            System.out.println("Not able to decode NULL ntree node! Test Failed");
+            System.out.println("Not able to decodeBFS NULL ntree node! Test Failed");
         }
-        NTreeNode nTreeNode = decode(bTreeNode);
+        NTreeNode nTreeNode = decodeBFS(bTreeNode);
         if (nTreeNode == null) {
             System.out.println("NTree node is [NULL]");
         } else {
-            System.out.println("Not able to decode NULL btree node! Test Failed");
+            System.out.println("Not able to decodeBFS NULL btree node! Test Failed");
         }
 
     }
